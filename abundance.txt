@@ -1,0 +1,1 @@
+Stage	Z	Durationeggs	0.05	5yolk_larvae	0.25	6larvae	0.1	40juveniles	2	6adults	0.5	6

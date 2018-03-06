@@ -1,0 +1,26 @@
+YR = read.table("YR.txt",header=T)
+
+M = 0.35   #for all ages
+F = 0.5    #for age 2 and older fish
+
+#with both F and M, recalculate N1
+YR$N1 = 0
+YR$N1[1:2] = YR$N[1:2]
+for(i in 3:20){
+	YR$N1[i] = YR$N1[i-1]*exp(-(M+F))
+}
+
+#Calculate Fishing deaths using Baranov's catch equation
+YR$Fishing_deaths = F*(1-exp(-(M+F)))*YR$N1/(M+F)
+YR$Fishing_deaths[1] = 0
+
+#Catch (weight)
+YR$Catch = YR$Fishing_deaths*YR$Weight/1000
+
+#Yield per recruit
+sum(YR$Catch)/YR$N[1]
+
+#SSB 
+YR$SSB = YR$N1* YR$Weight * YR$Maturity * YR$R_Fecundity/1000
+sum(YR$SSB)/YR$N[1]
+

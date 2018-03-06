@@ -1,0 +1,36 @@
+library(FSA)
+library(NCStats)
+library(nlstools)
+library(plotrix)
+
+#fit Beverton-Holt curve
+SR = read.table("Celtic.txt",header=T)
+plot(Recruitment~Stock,SR,ylab="Recruitment (1000 fish)",xlab="Stock (Mt)",main="Celtic Sea cod")
+bh1s = srStarts(Recruitment~Stock,data=SR,type="BevertonHolt",param=1)
+bh1 = log(Recruitment)~log((a*Stock)/(1+b*Stock))
+bh1
+bh1nls = nls(bh1,data=SR,start=bh1s)
+curve((coef(bh1nls)[1]*x)/(1+coef(bh1nls)[2]*x),from=0,to=25000,col="red",lwd=2,add=TRUE)
+overview(bh1nls)
+
+
+r1 = srFuns(type="Ricker",param=1)
+r1s = srStarts(Recruitment~Stock,data=SR,type="Ricker",param=1)
+r1s
+r1nls <- nls(log(Recruitment)~log(r1(Stock,a,b)),data=SR,start=r1s,algorithm="port",lower=c(0))
+curve(r1(x,coef(r1nls)[1],coef(r1nls)[2]),from=0,to=25000,col=4,lwd=2,lty=3,add=TRUE)
+legend("topright",legend=c("Beverton-Holt model","Ricker model"),col=c(2,4),lwd=2)
+overview(r1nls)
+
+
+#R2 = 1-RSS/TSS
+a = 5.243e-01
+b = 6.315e-05
+fitted =  log((a * SR$Stock)/(1 + b * SR$Stock))
+RSS = sum((log(SR$Recruitment)-fitted)^2)
+TSS = sum((log(SR$Recruitment)-mean(log(SR$Recruitment)))^2)
+R2 = 1-RSS/TSS
+
+
+
+
